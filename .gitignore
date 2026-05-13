@@ -1,0 +1,14 @@
+# Dependencias de Node/Vue
+   node_modules/
+   dist/
+   dist-ssr/
+   *.local
+
+   # Entornos de Python
+   venv/
+   __pycache__/
+   *.pyc
+
+   # Variables de entorno y SO
+   .env
+   .DS_Store
