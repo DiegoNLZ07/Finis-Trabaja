@@ -1,3 +1,9 @@
+import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap"; // Esto incluye el JS para botones, modales, etc.
+import { createApp } from 'vue'
+import App from './App.vue'
+
+createApp(App).mount('#app')
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 
