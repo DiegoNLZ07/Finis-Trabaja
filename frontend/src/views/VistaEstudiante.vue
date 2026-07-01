@@ -1,66 +1,31 @@
 <template>
-  <div class="container mt-4">
-    <h2 class="text-success mb-4">Catálogo de Oportunidades</h2>
-
-    <div v-if="mensajeExito" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-      <strong>¡Excelente!</strong> {{ mensajeExito }}
-      <button type="button" class="btn-close" @click="mensajeExito = ''"></button>
-    </div>
-
-    <div class="card mb-4 shadow-sm border-0 bg-light">
+  <div class="container">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-white border-bottom-0 pt-4 pb-0 d-flex justify-content-between align-items-center">
+        <h2 class="h4 text-dark mb-0">Ofertas Disponibles</h2>
+        <button @click="cargarOfertas" class="btn btn-sm btn-outline-secondary">
+          🔄 Actualizar Ofertas
+        </button>
+      </div>
       <div class="card-body">
-        <h5 class="card-title text-muted mb-3">Filtrar Ofertas</h5>
-        <div class="row g-3">
-          <div class="col-md-4">
-            <input 
-              v-model="filtroTitulo" 
-              type="text" 
-              class="form-control" 
-              placeholder="Buscar por cargo (ej. Desarrollador)" 
-            />
-          </div>
-          <div class="col-md-4">
-            <input 
-              v-model="filtroEmpresa" 
-              type="text" 
-              class="form-control" 
-              placeholder="Buscar por empresa" 
-            />
-          </div>
-          <div class="col-md-4">
-            <select v-model="filtroModalidad" class="form-select">
-              <option value="">Todas las modalidades</option>
-              <option value="Remoto">Remoto</option>
-              <option value="Híbrido">Híbrido</option>
-              <option value="Presencial">Presencial</option>
-            </select>
+        <p class="text-muted small mb-4">Vacantes a las que aún no has postulado (Estudiante ID: 2)</p>
+
+        <div v-if="ofertas.length > 0" class="row g-4">
+          <div v-for="oferta in ofertas" :key="oferta.id" class="col-12">
+            <div class="d-flex justify-content-between align-items-center p-3 border rounded shadow-sm bg-white">
+              <div>
+                <h5 class="text-primary mb-1">{{ oferta.titulo_cargo }}</h5>
+                <p class="text-muted mb-0">{{ oferta.descripcion }}</p>
+              </div>
+              <button @click="postular(oferta.id)" class="btn btn-success fw-semibold ms-3">
+                📩 Postular
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div v-if="cargando" class="spinner-border text-success" role="status">
-      <span class="visually-hidden">Cargando...</span>
-    </div>
-
-    <div v-else-if="ofertasFiltradas.length === 0" class="alert alert-warning">
-      No se encontraron ofertas que coincidan con tu búsqueda.
-    </div>
-
-    <div v-else class="row">
-      <div v-for="oferta in ofertasFiltradas" :key="oferta.id" class="col-md-4 mb-4">
-        <div class="card shadow-sm h-100 border-success border-opacity-25">
-          <div class="card-body">
-            <h5 class="card-title text-success">{{ oferta.titulo }}</h5>
-            <h6 class="card-subtitle mb-3 text-muted">{{ oferta.empresa }}</h6>
-            <ul class="list-unstyled mb-4">
-              <li><strong>Modalidad:</strong> {{ oferta.modalidad }}</li>
-              <li><strong>Renta:</strong> {{ oferta.sueldo }}</li>
-            </ul>
-            <button @click="procesarPostulacion(oferta.id)" class="btn btn-success w-100">
-              Postular a esta oferta
-            </button>
-          </div>
+        <div v-else class="alert alert-warning text-center" role="alert">
+          ¡Felicidades! Ya has postulado a todas las ofertas disponibles en la base de datos.
         </div>
       </div>
     </div>
@@ -68,42 +33,39 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { useOfertasController } from '../controllers/OfertasController';
+import { ref, onMounted } from 'vue';
 
-// Extraemos lo necesario del controlador
-const { ofertas, cargando, tomarOferta } = useOfertasController();
+const ofertas = ref([]);
+const ESTUDIANTE_ID = 2;
+const API_URL = "http://localhost:8000";
 
-// Variables reactivas para los filtros
-const filtroTitulo = ref('');
-const filtroEmpresa = ref('');
-const filtroModalidad = ref('');
-
-// Variable para el mensaje de éxito
-const mensajeExito = ref('');
-
-// Lógica computada para filtrar las ofertas en tiempo real
-const ofertasFiltradas = computed(() => {
-  return ofertas.value.filter(oferta => {
-    const coincideTitulo = oferta.titulo.toLowerCase().includes(filtroTitulo.value.toLowerCase());
-    const coincideEmpresa = oferta.empresa.toLowerCase().includes(filtroEmpresa.value.toLowerCase());
-    const coincideModalidad = filtroModalidad.value === '' || oferta.modalidad === filtroModalidad.value;
-    
-    return coincideTitulo && coincideEmpresa && coincideModalidad;
-  });
-});
-
-// Función envoltorio para mostrar el mensaje tras postular
-const procesarPostulacion = async (idOferta) => {
-  // Llama a la función original del controlador
-  await tomarOferta(idOferta);
-  
-  // Muestra el mensaje en la pantalla
-  mensajeExito.value = "¡Postulación enviada! La empresa revisará tu CVV.";
-  
-  // Oculta el mensaje automáticamente después de 4 segundos
-  setTimeout(() => {
-    mensajeExito.value = '';
-  }, 4000);
+const cargarOfertas = async () => {
+  try {
+    const res = await fetch(`${API_URL}/estudiantes/${ESTUDIANTE_ID}/ofertas`);
+    if (res.ok) {
+      ofertas.value = await res.json();
+    }
+  } catch (error) {
+    console.error("Error conectando a la BD:", error);
+  }
 };
+
+const postular = async (ofertaId) => {
+  try {
+    const res = await fetch(`${API_URL}/estudiantes/${ESTUDIANTE_ID}/postular/${ofertaId}`, {
+      method: 'POST'
+    });
+    if (res.ok) {
+      // Recargamos la lista desde la BD. Como la postulación ya existe, 
+      // el backend filtrará esta oferta y ya no aparecerá en la pantalla.
+      await cargarOfertas();
+    }
+  } catch (error) {
+    console.error("Error al postular:", error);
+  }
+};
+
+onMounted(() => {
+  cargarOfertas();
+});
 </script>
