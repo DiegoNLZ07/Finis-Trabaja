@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 
 # Configuración de conexión con PyMySQL para MySQL 8.x [cite: 1233, 1234]
 # Reemplaza 'usuario', 'password', 'localhost' y 'finistrabaja_db' con tus credenciales locales.
-SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:root@127.0.0.1:3306/finistrabaja_db"
+SQLALCHEMY_DATABASE_URL = "mysql+pymysql://root:@127.0.0.1:3306/finistrabaja_db"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
