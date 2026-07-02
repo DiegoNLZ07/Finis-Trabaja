@@ -36,7 +36,7 @@ Asegúrate de tener instalado:
    pip install fastapi uvicorn sqlalchemy pymysql
 
 4. Poblar la base de datos (Ejecuta esto SOLO UNA VEZ para crear las tablas y datos base):
-   python poblar_bd.py
+   python poblarbd.py
 
 5. Inicia el servidor del backend (déjalo corriendo):
    uvicorn main:app --reload
