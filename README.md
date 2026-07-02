@@ -98,11 +98,15 @@ Esto significa que, tras interactuar con la página y tomar ofertas, **la vista 
 
 - Volver a ejecutar el script de datos base:
   ```bash
-  python poblar_bd.py
+  python poblarbd.py
   ```
   *(revisar si el script requiere vaciar antes las tablas relacionadas, o si lo hace automáticamente al ejecutarse)*
 - O modificar manualmente los registros correspondientes directamente desde phpMyAdmin, restaurando el estado de las ofertas para que vuelvan a marcarse como disponibles.
-
+  *Para poder volver a visualizar los datos como estudiante es necesario ejecutar lo siguiente dentro de la base de datos:
+  SET SQL_SAFE_UPDATES = 0;
+   DELETE FROM finistrabaja_db.postulaciones;
+   SET SQL_SAFE_UPDATES = 1;
+ 
 ---
 
 ## 6. Notas para quien clone este repositorio desde cero
