@@ -60,7 +60,7 @@ Asegúrate de tener instalado:
    ```
 4. Puebla la base de datos — **ejecutar solo una vez**, para crear las tablas y datos de prueba:
    ```bash
-   python poblar_bd.py
+   python poblarbd.py
    ```
 5. Inicia el servidor del backend (déjalo corriendo):
    ```bash
